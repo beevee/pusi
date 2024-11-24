@@ -1,0 +1,1198 @@
+<!doctype html>
+<!-- Калькулятор для спортивной "Своей игры".
+Программа не использует никаких дополнительных файлов и полностью портативна.
+Все рекомендации по правке файла - в конце страницы.
+Бесплатное распространение и доработка документа приветствуются. -->
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+		<meta id="viewport" name="viewport" content="width=600" />
+		<title>
+			Своя игра - калькулятор
+		</title>
+		<style type="text/css">
+			body {
+				text-align : center;
+				padding : 0;
+				margin : 0;
+				height : 100%;
+			}
+			
+			/* Элементы внутренней механики */
+			div.visibleTab {
+				width:100%;
+				position:absolute;
+				min-height:99%;
+				z-index:1;
+			}
+			div.xvisibleTab {
+				width:100%;
+				position:absolute;
+				z-index:1;
+			}
+			div.hiddenTab {
+				width:100%;
+				display:none;
+				position:absolute;
+				min-height:99%;
+				z-index:2;
+			}
+			
+			/* Угловая кнопка*/
+			input.switch {
+				width:20px;
+				height:20px;
+				position:absolute;
+				left:0;
+				top:0;
+				z-index:2;
+			}
+
+			/* Верхняя панель кальклятора */
+			table.topPanel {
+				background-color : #CCDDEE;
+				border-spacing : 5px;
+				margin : 0 10px 10px 10px;
+				display : inline-block;
+				white-space : nowrap;
+			}
+			table.topPanel td {
+				background-color : #F1FAFF;
+				padding : 5px 10px;
+				white-space : nowrap;
+			}
+			
+			/* Список игроков */
+			div.playerList {
+				display: inline-block;
+				white-space : nowrap;
+			}
+			/* Кнопки подсветки тем */
+			div.markers {
+				text-align : center;
+				display: inline-block;
+				padding : 10px;
+				vertical-align : top;
+			}
+			input.highlightButton {
+				width : 50px;
+				height : 40px;
+				font-size : 16pt;
+			}
+			input.highlightButtonSmall {
+				width : 50px;
+				height : 20px;
+				font-size : 8pt;
+			}
+			
+			/* Поле игрока */
+			div.playerTab {
+				text-align : center;
+				display: inline-block;
+				padding : 5px;
+				background-color : #99AABB;
+				vertical-align : top;
+			}
+			/* Поле кнопок */
+			div.buttonList {
+				padding : 5px 0px;
+				background-color : #F1FAFF;
+			}
+			div.button0 {
+				padding : 0px 10px;
+				margin : 0px;
+			}
+			/* подсвеченное поле */
+			div.button1 {
+				padding : 0px 10px;
+				margin : 0px;
+				background-color : #EEDDAA;
+			}
+			/* имя игрока */
+			div.name {
+				margin : 5px 0px;
+				padding : 0px 5px;
+				background-color : #F1FAFF;
+				font-size : 16pt;
+				align : center;
+			}
+			/* кнопка фиксированного изменения очков */
+			input.score {
+				width : 60px;
+				height : 40px;
+				font-size : 16pt;
+			}
+			/* кнопки "+" и "-" */
+			input.scoreButton {
+				width : 28px;
+				height : 40px;
+				font-size : 16pt;
+			}
+			/* поле ввода суммы вручную */
+			input.scoreEdit {
+				width : 60px;
+				height : 32px;
+				font-size : 16pt;
+				text-align : center;
+			}
+			/* широкие кнопки ("Удалить", "Отменить" */
+			input.wide {
+				width : 120px;
+				height : 20px;
+				font-size : 8pt;
+			}
+			/* очки игрока */
+			div.score {
+				text-align : center;
+				font-size : 50pt;
+				font-weight : bold;
+				margin : 5px 0px;
+				background-color : #F1FAFF;
+			}
+			/* поле истории изменения очков */
+			div.history {
+				align : center;
+				background-color : #F1FAFF;
+				color : #445566;
+			}
+			div.add {
+				display : inline;
+				color : #44aa66;
+			}
+			div.sub {
+				display : inline;
+				color : #995566;
+			}
+
+			/* малое поле игрока (неактивного) */
+			div.gm_playerTab {
+				text-align : center;
+				display: inline-block;
+				padding : 5px;
+				background-color : #99AABB;
+				vertical-align : top;
+			}
+			/* малое поле игрока (имеющего право отвечать) */
+			div.gm_activePlayer {
+				text-align : center;
+				display: inline-block;
+				padding : 5px;
+				background-color : #7FFF7F;
+				vertical-align : top;
+			}
+			/* малое поле игрока (имеющего право выбирать) */
+			div.gm_selectPlayer {
+				text-align : center;
+				display: inline-block;
+				padding : 5px;
+				background-color : #CCDDEE;
+				vertical-align : top;
+			}
+			/* поле очков */
+			div.gm_score {
+				text-align : center;
+				font-size : 50pt;
+				font-weight : bold;
+				margin : 5px 0px;
+				background-color : #F1FAFF;
+				width:150px;
+			}
+			/* поле имени */
+			div.gm_name {
+				margin : 5px 0px;
+				background-color : #F1FAFF;
+				font-size : 16pt;
+				align : center;
+			}
+			/* блок с информацией об игроках под сеткой */
+			div.gm_footer {
+				display: inline-block;
+				/* без следующих трех строк поле будет прицеплено снизу к сетке, а не к низу экрана */
+				position : absolute;
+				bottom : 0px;
+				left : 0px;
+				padding : 5px
+				background-color : #CCDDEE;
+				vertical-align : top;
+				text-align : center;
+				width : 100%;
+				white-space : nowrap;
+				z-index : 0;
+			}
+			/* Кнопки "+" и "-" */
+			input.gm_scoreButton {
+				width : 18px;
+				height : 40px;
+				font-size : 8pt;
+			}
+			/* Поле ввода очков */
+			input.gm_scoreEdit {
+				text-align : center;
+				width : 40px;
+				height : 40px;
+				font-size : 16pt;
+			}
+			/* Кнопка "Отменить" */
+			input.gm_wide {
+				width : 80px;
+				height : 20px;
+				font-size : 8pt;
+			}
+
+			table.hgame,table.hgame tr,table.hgame td {
+				display:none;
+			}
+			/* игровое поле */
+			table.game {
+				user-select: none;
+				-khtml-user-select: none;
+				-o-user-select: none;
+				-moz-user-select: -moz-none;
+				-webkit-user-select: none;
+				width:100%;
+				background-color:#CCDDEE;
+				border-spacing:10px;
+				margin: 0 0 4px 0;
+			}
+			/* клетка (общий вид) */
+			table.game td {
+				background-color:#F1FAFF;
+				color:#112233;
+			}
+			/* тема 16:9 */
+			table.game td.topic16 {
+				width:30%;
+				font-size:20pt;
+				height:64px;
+			}
+			/* невыбранная клетка 16:9 */
+			table.game td.gm_cell16 {
+				width:14%;
+				font-size:40pt;
+			}
+			/* выбранная клетка 16:9 */
+			table.game td.gm_activeCell16 {
+				background-color:#112233;
+				color:#F1FAFF;
+				width:14%;
+				font-size:40pt;
+			}
+			/* тема 4:3 */
+			table.game td.topic4 {
+				width:30%;
+				font-size:30pt;
+				height:100px;
+			}
+			/* невыбранная клетка 4:3 */
+			table.game td.gm_cell4 {
+				width:14%;
+				font-size:60pt;
+			}
+			/* выбранная клетка 4:3 */
+			table.game td.gm_activeCell4 {
+				background-color:#112233;
+				color:#F1FAFF;
+				width:14%;
+				font-size:60pt;
+			}
+			/* боковая кнопка */
+			input.gm_sideButton {
+				width : 60px;
+				height : 40px;
+				font-size : 8pt;
+				white-space : normal;
+			}
+
+			/* окно Аукцион / Кот в мешке */
+			div.sp_tab {
+				background-color : #F1FAFF;
+				border : solid 10px #CCDDEE;
+				display : inline-block;
+				width:70%;
+				padding: 0 0 20px 0;
+			}
+			div.sp_title {
+				padding : 40px;
+				font-size:100pt;
+				line-height : 80%;
+			}
+			div.sp_info {
+				font-size:50pt;
+				margin: -30px 0 30px 0;
+				padding: 0px 50px;
+				white-space : normal;
+			}
+			input.sp_select {
+				font-size:25pt;
+				white-space : normal;
+				width : 200px;
+				height : 120px;
+				margin : 20px;
+			}
+
+			/* окно финала */
+			div.fn_tab {
+				background-color : #F1FAFF;
+				border : solid 10px #CCDDEE;
+				display : inline-block;
+				width:80%;
+				padding: 0 0 20px 0;
+			}
+			div.fn_info {
+				font-size:50pt;
+				white-space : nowrap;
+			}
+			div.fn_list {
+				width:100%;
+				white-space : normal;
+			}
+			/* кнопка с темой */
+			input.fn_topic {
+				font-size:34pt;
+				white-space : normal;
+				width : 60%;
+				height : 70px;
+				margin : 5px;
+				padding : 4px;
+			}
+			
+			/* окно приветствия */
+			div.welcome_top {
+				font-size:50pt;
+				margin: 0;
+				white-space : normal;
+			}
+			div.welcome {
+				background-color : #F1FAFF;
+				border : solid 10px #CCDDEE;
+				display : inline-block;
+				position : absolute;
+				margin : auto;
+				left : 10%;
+				top: 5%;
+				min-height : 80%;
+				width : 80%;	
+				z-index : 2;				
+			}
+			div.intro {
+				text-align : justify;
+				padding : 20px;
+			}
+			div.welcome p{
+				padding : 0;
+				margin : 4px;
+				text-indent : 20px;
+			}
+			div.welcome a{
+				text-decoration : none;
+				color:#334455;
+			}
+			div.welcome a:hover{
+				text-decoration : none;
+				color:#556677;
+			}
+		</style>
+		<script type="text/javascript">			
+			isInit = 0;
+
+			// Удаление элемента по содержимому
+			function removeItem(array, item){
+				for(var i in array){
+					if(array[i]==item){
+						array.splice(i,1);
+						break;
+						}
+				}
+			}			
+			
+			// Оформление даты и времени для вывода.
+			function formatDate(d) {
+				var t;
+				var res = (t=d.getDate())<10?("0"+t):t;
+				res += '.'+((t=d.getMonth()+1)<10?("0"+t):t);
+				res += '.'+((t=d.getFullYear() % 100)<10?("0"+t):t);
+				res += ' '+((t=d.getHours())<10?("0"+t):t);
+				res += '-'+((t=d.getMinutes())<10?("0"+t):t);
+				res += '-'+((t=d.getSeconds())<10?("0"+t):t);
+				return res;
+			}
+			
+			// Если нет поддержки store - создать имитацию.
+			if (typeof window.localStorage == 'undefined') {
+				//window.store = [];
+				store = [];
+				store["mult"] = 1;
+				store["playerList"] = "1,2,3";
+				store["lx"] = -1;
+				store["ly"] = 0;
+				store["lp"] = 2;
+				store["tab"] = 0;
+			} else {
+				store = window.localStorage;
+			}
+			
+			// Загрузка из store и подготовка поля.
+			function initGame() {
+				var t;
+				if (t = document.getElementById("welcome")) {
+					t.className = "hiddenTab";
+				}
+				if (isInit) return;
+				// Множитель
+				if (!(mult = parseInt(store["mult"])))
+					mult = 1;
+				setMult (mult);
+				
+				// Список игроков
+				var pl = store["playerList"];
+				if (pl) 
+					playerList = pl.split(",");
+				else 
+					playerList = [1,2,3];
+				for (var i in playerList) {
+					var pn = playerList[i];
+					var score = store["score"+pn];
+					if (!score) score = 0;
+					var name = store["name"+pn];
+					if (!name) name = "Игрок "+pn;
+					addPlayer(pn,name,score);
+				}
+
+				// Игровая таблица
+				if (t = document.getElementById("gtable")) {
+					var txt = ""; 
+					for (var i=0;i<6;i++) {
+						var top = store["topic"+i];
+						if (!top) top = "Тема №" + (i+1);
+						txt += "<tr><td class='topic"+ar+"' id='gtop"+i+"' onclick='edtop("+i+")'>"+top+"</td>";
+						for (var j=1;j<6;j++) {
+							txt += "<td class='gm_cell"+ar+"' id='c"+i+j+"' onclick='selectCell("+i+","+j+")'>"+(store["c"+i+j]=="1"?"":(j*mult+"0"))+"</td>";
+						}
+						txt += "</tr>";
+					}
+					t.innerHTML = txt;
+				}
+
+				lx = store["lx"];
+				ly = store["ly"];
+				lp = store["lp"];
+
+				if (typeof store["tab"] == 'undefined')
+					store["tab"] = "1";
+				switchTabs(store["tab"]);
+				setSelectPlayer(lp);
+				if (lx >= 0)
+					selectCell(ly,lx);
+				isInit = 1;
+			}
+			
+			// Сброс игроков
+			function resetPlayers() {
+				while (playerList.length) {
+					for (z in playerList)
+						delPlayer(playerList[z],1);
+				}
+				for(z=0;z<3;z++)
+					addPlayer();
+				setMult(1);
+			}
+			
+			// Добавление игрока
+			// С параметрами - для загрузки (без сохранения данных)
+			// Без параметров - со стандартным именем и сохранением
+			function addPlayer(pN, pName, pScore) {
+				var n = pN; 
+				var load = 1;
+				if (!n) {
+					n = ((tmp = playerList.slice(-1)[0])?tmp:0);
+					n++;
+					pName = "Игрок "+n;
+					pScore = 0;
+					load = 0;
+				}
+				if (!load) {
+					playerList.push(n);
+					store["playerList"] = playerList.join(",");
+				}
+				document.getElementById("viewport").setAttribute("content","width="+Math.max(450,(playerList.length * 160)));
+				
+				var tm,pl;
+				if ((tm = document.getElementById("template")) && (pl = document.getElementById("playerList"))) {
+					pl.innerHTML += tm.innerHTML.replace(/_num_/g,n);					
+				}
+				if ((tm = document.getElementById("gm_template")) && (pl = document.getElementById("gplayerList"))) {
+					pl.innerHTML += tm.innerHTML.replace(/_num_/g,n);					
+				}
+				setPlayerName(n,pName);
+				store["score"+n] = 0;
+				setPlayerScore(n,pScore);
+				applyMult(n);
+			}
+
+			// Удаление игрока
+			// inst - мгновенность исчезания (при сбросе игроков)
+			function delPlayer(n,inst) {
+				var pl;
+				if (pl = document.getElementById("p"+n)) {
+					if (!pl.style.opacity) pl.style.opacity = 1.0;
+					if ((pl.style.opacity > 0.2) && !inst) {
+						pl.style.opacity -= 0.1;
+						setTimeout(function() {delPlayer(n,0)}, 50);
+					} else {
+						pl.parentNode.removeChild(pl);
+						removeItem(playerList,n);
+						document.getElementById("viewport").setAttribute("content",
+							"width="+Math.max(450,(playerList.length * 160)));
+					}
+				}
+				if (pl = document.getElementById("gp"+n)) {
+					pl.parentNode.removeChild(pl);
+					removeItem(playerList,n);
+					store["playerList"] = playerList.join(",");
+				}
+			}
+			
+			// Правка кнопок множителя для игрока
+			function applyMult(pN) {
+				var b;
+				for (var i=1;i<=5;i++) {
+					if (b = document.getElementById("p"+pN+"d"+i))
+						b.value = "-"+i*10*mult;
+					if (b = document.getElementById("p"+pN+"a"+i))
+						b.value = "+"+i*10*mult;
+				}
+			}
+			
+			// Установка множителя раунда
+			function setMult(m) {
+				mult = m;
+				store["mult"] = m;
+				for (var i in playerList) {
+					var pn = playerList[i];
+					applyMult(pn);
+				}
+				var b;
+				for (var i=1;i<=5;i++) {
+					if (b = document.getElementById("hl1b"+i))
+						b.value = i*10*m;
+					if (b = document.getElementById("hl2b"+i))
+						b.value = i*10*m;
+				}
+				for (i=0;i<6;i++)
+					for(j=1;j<6;j++)
+						if (b = document.getElementById("c"+i+j))
+							b.innerHTML = b.innerHTML==""?"":(j*mult+"0");
+			}
+
+			// Установка имени игрока
+			function setPlayerName(pN, pName) {
+				var nm;
+				if (nm = document.getElementById("n"+pN)) {
+					nm.innerHTML = pName;
+				}
+				if (nm = document.getElementById("gn"+pN)) {
+					nm.innerHTML = pName;
+				}				
+				store["name"+pN] = pName;
+			}
+			
+			// Установка счета игрока
+			function setPlayerScore(pN, pScore, undo) {
+				var sc;
+				if (sc = document.getElementById("s"+pN)) {
+					sc.innerHTML = pScore;
+				}
+				if (sc = document.getElementById("gs"+pN)) {
+					sc.innerHTML = pScore;
+				}				
+				var s;
+				if (!(s = parseInt(pScore)))
+					s = 0;
+				var l = store["score"+pN];
+				if (!(l = parseInt(l)))
+					l = 0;
+				if (!undo)
+					addHistory(pN,l,s-l);
+				store["score"+pN] = pScore;
+			}
+			
+			// Переход в режим правки имени
+			function rename(pN) {
+				var rn, nm;
+				if (rn = document.getElementById("rn"+pN))
+					return	;
+				if (nm = document.getElementById("n"+pN)) {				
+					nm.innerHTML = "<input type=\"text\" value=\""+nm.innerHTML+"\" id=\"rn"+pN+"\" onkeypress=\"newName(event,"+pN+")\" onblur=\"newName(event,"+pN+")\" />";
+					rn = document.getElementById("rn"+pN);
+					rn.focus();
+				}
+			}
+
+			// Применение измененного имени
+			function newName (e,pN) {
+				var rn;
+				if (e.type == "blur" || e.keyCode == 13) {
+					if (rn = document.getElementById("rn"+pN)) {		
+						var s = rn.value;
+						setPlayerName(pN,s);
+					}
+				}					
+			}
+			
+			// Переход в режим правки счета
+			function rescore(pN) {
+				var rn, nm;
+				if (rn = document.getElementById("rs"+pN))
+					return	;
+				if (nm = document.getElementById("s"+pN)) {				
+					nm.innerHTML = "<input type=\"text\" value=\""+nm.innerHTML+"\" id=\"rs"+pN+"\" onkeypress=\"newScore(event,"+pN+")\" onblur=\"newScore(event,"+pN+")\" />";
+					rn = document.getElementById("rs"+pN);
+					rn.focus();
+				}
+			}
+
+			// Применение измененного счета
+			function newScore (e,pN) {
+				var rn;
+				if (e.type == "blur" || e.keyCode == 13) {
+					if (rn = document.getElementById("rs"+pN)) {		
+						var s = rn.value;
+						if (!(s = parseInt(s))) 
+							s = 0;
+						setPlayerScore(pN,s);
+					}
+				}					
+			}			
+				
+			// Добавить изменение счета в список
+			function addHistory(pN, old, add) {
+				var h;
+				if (!add) 	
+					return;
+				if (h = document.getElementById("h"+pN)) {
+					h.innerHTML = old + "<a></a><div class='" + (add > 0?"add'>+":"sub'>")+add+"</div>" + "<br /><a></a>" + h.innerHTML;
+				}
+			}
+			
+			// Добавление очков игроку
+			function addScore(pN,add,mt) {
+				if (!mt) mt = mult;
+				var sc;
+				if (sc = document.getElementById("s"+pN)) {
+					setPlayerScore(pN,parseInt(sc.innerHTML) + add * mt)
+				}
+				// Сброс подсветки
+				if (add > 0) highlightButton(0);
+				else {
+					var d;
+					for (var i=1; i<7; i++) {
+						if (d = document.getElementById("hl"+pN+"n"+i))
+							d.className = "button0";
+					}
+				}
+				answerPlayer(pN,add);
+			}
+
+			// Добавление очков игроку вручную
+			function addScoreCustom(pN,mt,ed) {
+				var sc, i;
+				if (sc = document.getElementById(ed)) {
+					if (i = parseInt(sc.value))
+						addScore(pN,i*mt,1);
+				}
+				answerPlayer(pN,mt);
+			}
+			
+			// Отмена неправильного начисления
+			function undoPlayer(n) {
+				if (s = document.getElementById("s"+n)) {
+					if (h = document.getElementById("h"+n)) {
+						t = h.innerHTML.split('<a></a>');
+						if (t[0]) 
+							setPlayerScore(n,t[0],true);
+						else
+							setPlayerScore(n,0,true);
+						t.shift();t.shift();
+						h.innerHTML = t.join('<a></a>');
+					}
+				}
+				store();
+			}
+			
+			// Подсветка кнопок текущего вопроса
+			function highlightButton(n) {
+				var d;
+				for (var p in playerList) {
+					var pn = playerList[p];
+					for (var i=1; i<7; i++) {
+						if (d = document.getElementById("hl"+pn+"n"+i))
+							d.className = "button"+(i==n?"1":"0");
+					}
+				}
+			}
+
+			// Регистрация ответа игрока
+			function answerPlayer(pN, mt) {
+				if (mt > 0) {
+					setSelectPlayer(pN);
+					selectCell(ly,lx,1);
+				} else {
+					if (tmp = document.getElementById("gp"+pN))
+						tmp.className = "gm_playerTab";
+					for (i in playerList) {
+						pn = playerList[i];
+						if (tmp = document.getElementById("gp"+pn))
+							if (tmp.className == "gm_activePlayer") 
+								return;
+					}
+					setSelectPlayer(lp);
+					selectCell(ly,lx,1);					
+				}
+			}
+
+			// Создание миниотчета об игре
+			function report() {
+				var r, nm, sc;
+				if (r = document.getElementById("report")) {
+					var d = new Date();
+					var dt = formatDate(d);
+					var names = [];
+					var scores = [];
+					for (var i in playerList) {
+						var pn = playerList[i];
+						if (nm = document.getElementById("n"+pn))
+							names.push(nm.innerHTML);
+						else	
+							names.push("Игрок "+pn);
+						if (sc = document.getElementById("s"+pn))
+							scores.push(sc.innerHTML);
+						else	  
+							scores.push(0);
+					}
+					
+					var out = r.innerHTML;
+					out = out.replace("_date_",dt+" ("+names.join(",")+")");
+					out = out.replace("_head_",dt.replace(/-/g,":"));
+					out = out.replace("_names_","<td class='name'>"+names.join("</td><td class='name'>")+"</td>");					
+					out = out.replace("_scores_","<td class='score'>"+scores.join("</td><td class='score'>")+"</td>");					
+					window.open('data:text/html;charset=utf-8,' + out);
+				}
+			}
+			
+			// Переключение вкладок
+			function switchTabs(tab) {
+				if (typeof tab == 'undefined') 
+					store["tab"] = (store["tab"]=="1")?"0":"1";
+				else
+					if (tab == "1") return;
+				if (w = document.getElementById("tab2"))
+					w.className = w.className=="visibleTab"?"hiddenTab":"visibleTab";
+				if (w = document.getElementById("tab1"))
+					w.className = w.className=="hiddenTab"?"visibleTab":"hiddenTab";
+			}
+			
+			// Выбор ведущего игрока
+			function setSelectPlayer(n) {
+				store["lp"] = n;
+				lp = n;
+				for (i in playerList) {
+					pn = playerList[i];
+					if (tmp = document.getElementById("gp"+pn))
+						tmp.className = (pn == lp?"gm_selectPlayer":"gm_playerTab");
+				}					
+			}
+
+			// Выбор играющего игрока
+			function setActivePlayer(n) {
+				store["lp"] = n;
+				lp = n;
+				for (i in playerList) {
+					pn = playerList[i];
+					if (tmp = document.getElementById("gp"+pn))
+						tmp.className = (pn == lp?"gm_activePlayer":"gm_playerTab");
+				}					
+			}
+			
+			// Выбор клетки
+			function selectCell(y,x,nul) {
+				if (lx >= 0)
+					if (((lx != x) || (ly != y)) && (c = document.getElementById("c"+ly+lx)))
+						c.className = "gm_cell"+ar;
+						
+				if (c = document.getElementById("c"+y+x)) {
+					if (c.className == "gm_activeCell"+ar || nul) {
+						c.className = "gm_cell"+ar;
+						c.innerHTML = (c.innerHTML == "" && !nul)?(x*mult+"0"):"";
+						store["c"+y+x] = c.innerHTML==""?"1":"0";
+						x = -1;
+						setSelectPlayer(lp);
+					} else {
+						c.className = "gm_activeCell"+ar;
+						for (i in playerList) {
+							pn = playerList[i];
+							if (tmp = document.getElementById("gp"+pn))
+								tmp.className = "gm_activePlayer";
+						}					
+					}
+				}
+				lx = x;
+				ly = y;
+				store["lx"] = lx;
+				store["ly"] = ly;
+				highlightButton(lx);
+				if (!nul && x > 0)
+					for (i in playerList) {
+						pn = playerList[i];
+						if (ed = document.getElementById("gc"+pn))
+							ed.value = x*mult+"0";
+					}
+			}
+
+			// Редактирование темы
+			function edtop(n) {
+				var rm, nm;
+				if (rn = document.getElementById("rg"+n))
+					return	;
+				if (nm = document.getElementById("gtop"+n)) {				
+					nm.innerHTML = "<input type=\"text\" value=\""+nm.innerHTML+"\" id=\"rg"+n+"\" onkeypress=\"newTopic(event,"+n+")\" onblur=\"newTopic(event,"+n+")\" />";
+					rn = document.getElementById("rg"+n);
+					rn.focus();
+				}
+			}
+			
+			// Установка нового названия темы
+			function newTopic (e,n) {
+				var rm, nm;
+				if (e.type == "blur" || e.keyCode == 13) {
+					if (rn = document.getElementById("rg"+n)) {		
+						var s = rn.value;
+						if (nm = document.getElementById("gtop"+n)) {				
+							nm.innerHTML = s;
+						}						
+						store["topic"+n] = s;
+					}
+				}					
+			}
+			
+			// Сброс сетки
+			function resetGame() {
+				var t;
+				if (t = document.getElementById("gtable")) {
+					var txt = ""; 
+					for (var i=0;i<6;i++) {
+						var top = "Тема №" + (i+1);
+						store["topic"+i] = top;
+						txt += "<tr><td class='topic"+ar+"' id='gtop"+i+"' onclick='edtop("+i+")'>"+top+"</td>";
+						for (var j=1;j<6;j++) {
+							store["c"+i+j] = "0";
+							txt += "<td class='gm_cell"+ar+"' id='c"+i+j+"' onclick='selectCell("+i+","+j+")'>"+j*mult+"0</td>";
+						}
+						txt += "</tr>";
+					}
+					t.innerHTML = txt;
+				}
+				lx = -1;
+				setSelectPlayer(lp);
+				store["lx"] = -1;
+			}
+			
+			// Окно аукциона и Кота в мешке
+			function g_spec(n) {
+				var sp, tl, tp;
+				if (sp = document.getElementById("sp_tab")) {
+					sp.className = "xvisibleTab";
+					if (tl = document.getElementById("gtable")) {
+						tl.className = "hgame";
+					}
+
+					if (tl = document.getElementById("sp_title")) {
+						tl.innerHTML = n==0?"Кот в мешке":"Аукцион";
+					}
+					if (tl = document.getElementById("sp_info")) {
+						tl.innerHTML = ((n==0) || (lx<0))?"":(store["topic"+ly]+(" за "+lx*mult*10));
+					}
+					if (tl = document.getElementById("sp_buttons")) {
+						var txt = "";
+						for (i in playerList) {
+							var pn = playerList[i];
+							if ((pn == lp) && (n == 0))
+								continue;
+							txt += "<input type='button' class='sp_select' value='"+store["name"+pn]+"' onclick='g_chose("+n+","+pn+")' />";
+						}
+						tl.innerHTML = txt;
+					}
+					
+				}
+			}
+
+			// Выбор в Аукционе / Коте в мешке
+			function g_chose(n,pN) {
+				var ed,tl;
+				if (n != 2)
+					setActivePlayer(pN);
+				else
+					if (ed = document.getElementById("gc"+lp))
+						ed.value = pN*mult+"0";
+				if (n != 0)
+					g_closeSpec();
+				else {
+					if (tl = document.getElementById("sp_info")) {
+						tl.innerHTML = "Играет "+store["name"+pN];
+					}
+					if (tl = document.getElementById("sp_buttons")) {
+						var txt = "";
+						txt += "<input type='button' class='sp_select' value='"+(mult*10)+"' onclick='g_chose(2,1)' />";
+						txt += "<input type='button' class='sp_select' value='"+(5*mult*10)+"' onclick='g_chose(2,5)' />";
+						tl.innerHTML = txt;
+					}
+				}
+			}
+			
+			// Скрытие Аукциона / Кота в мешке
+			function g_closeSpec() {
+				var sp;
+				if (sp = document.getElementById("sp_tab")) {
+					sp.className = "hiddenTab";
+				}
+				if (sp = document.getElementById("gtable")) {
+					sp.className = "game";
+				}
+			}
+
+			// Показать окно финала
+			function g_final() {
+				var sp;
+				if (sp = document.getElementById("gtable")) {
+					sp.className = "hgame";
+				}
+				if (sp = document.getElementById("fn_tab")) {
+					sp.className = "xvisibleTab";
+				}
+			}
+			// Скрытие финала
+			function g_closeFinal() {
+				var sp;
+				if (sp = document.getElementById("fn_tab")) {
+					sp.className = "hiddenTab";
+				}
+				if (sp = document.getElementById("gtable")) {
+					sp.className = "game";
+				}
+			}
+			
+			// Добавление темы
+			function g_addTopic() {
+				var txt, sp;
+				if (txt = window.prompt('Название темы'))
+					if (sp = document.getElementById("fn_topics")) {
+						txt = "<input type='button' class='fn_topic' onclick='g_remTopic(this)' value='"+txt+"'/>"
+						sp.innerHTML += txt;
+					}				
+			}
+			
+			// Удаление темы.
+			function g_remTopic(btn) {
+				btn.parentNode.removeChild(btn);
+			}
+			
+			// Окно "О программе"
+			function about() {
+				var sp
+				if (sp = document.getElementById("welcome")) {
+					sp.className = "welcome";
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<!-- Переключатель вкладок -->
+		<input type="button" class="switch" value="^" onclick="switchTabs();" />
+
+		<!-- Калькулятор-->
+		<div class="visibleTab" id="tab1">
+			<!-- Верхняя панель -->
+			<table class="topPanel"><tr><td>
+				<input type="button" value="Сброс" onclick="resetPlayers()" />
+				<input type="button" value="Добавить игрока" onclick="addPlayer()" />
+			</td><td>
+				Множитель раунда:
+				<input type="button" value="x1" onclick="setMult(1)" />
+				<input type="button" value="x2" onclick="setMult(2)" />
+				<input type="button" value="x3" onclick="setMult(3)" />
+			</td><td>
+				<input type="button" value="Создать отчет" onclick="report()" />
+				<input type="button" value="О программе" onclick="about()" />
+			</td></tr></table><br />
+			
+			<!-- Кнопки маркеров и место под список игроков -->
+			<div class="playerList" id="players">
+				<div class="markers" id="m1">
+						<input type="button" value=" " id="hl1b0" onclick="highlightButton(0);" class="highlightButtonSmall" /><br />
+						<input type="button" value="10" id="hl1b1" onclick="highlightButton(1);" class="highlightButton" /><br />
+						<input type="button" value="20" id="hl1b2" onclick="highlightButton(2);" class="highlightButton" /><br />
+						<input type="button" value="30" id="hl1b3" onclick="highlightButton(3);" class="highlightButton" /><br />
+						<input type="button" value="40" id="hl1b4" onclick="highlightButton(4);" class="highlightButton" /><br />
+						<input type="button" value="50" id="hl1b5" onclick="highlightButton(5);" class="highlightButton" /><br />
+						<input type="button" value="??" id="hl1b6" onclick="highlightButton(6);" class="highlightButton" /><br />
+				</div>
+				<div id="playerList" class="playerList">
+				</div>
+				<div class="markers" id="m2">
+						<input type="button" value=" " id="hl2b0" onclick="highlightButton(0);" class="highlightButtonSmall" /><br />
+						<input type="button" value="10" id="hl2b1" onclick="highlightButton(1);" class="highlightButton" /><br />
+						<input type="button" value="20" id="hl2b2" onclick="highlightButton(2);" class="highlightButton" /><br />
+						<input type="button" value="30" id="hl2b3" onclick="highlightButton(3);" class="highlightButton" /><br />
+						<input type="button" value="40" id="hl2b4" onclick="highlightButton(4);" class="highlightButton" /><br />
+						<input type="button" value="50" id="hl2b5" onclick="highlightButton(5);" class="highlightButton" /><br />
+						<input type="button" value="??" id="hl2b6" onclick="highlightButton(6);" class="highlightButton" /><br />
+				</div>
+			</div>
+		</div>
+
+		<!-- Игровая сетка-->
+		<div class="hiddenTab" id="tab2">
+			<!-- Место под сетку -->
+			<table class="game" id="gtable">
+			</table>
+
+			<!-- Боковые кнопки и место под информацию об игроках -->
+			<div class="gm_footer">
+				<div class="markers" id="gm1">
+					<input type="button" value="Сброс сетки" id="gtl1" onclick="resetGame();" class="gm_sideButton" /><br />
+					<input type="button" value="Настройка игры" id="gtl2" onclick="switchTabs();" class="gm_sideButton" /><br />
+					<input type="button" value="Отчет" id="gtl3" onclick="report();" class="gm_sideButton" />					
+				</div>			
+				<div id="gplayerList" class="playerList">
+				</div>
+				<div class="markers" id="gm2">
+					<input type="button" value="Кот в мешке" id="gtr1" onclick="g_spec(0);" class="gm_sideButton" /><br />
+					<input type="button" value="Аукцион" id="gtr2" onclick="g_spec(1);" class="gm_sideButton" /><br />
+					<input type="button" value="Финал" id="gtr3" onclick="g_final();" class="gm_sideButton" />
+				</div>
+			</div>
+		</div>
+		
+		<!-- Окно Аукциона / Кота в мешке -->
+		<div class="hiddenTab" id="sp_tab">
+			<br /><br />
+			<div class="sp_tab">
+				<div class="sp_title" id="sp_title">
+					Аукцион
+				</div>
+				<div class="sp_info" id="sp_info">
+					Тема № за 0
+				</div>
+				<!-- Место под кнопки -->
+				<div class="playerList" id="sp_buttons">
+				</div><br />
+				<input type="button" class="wide" onclick="g_closeSpec();" value="Закрыть" />
+			</div>
+		</div>
+
+		<!-- Окно финального раунда -->
+		<div class="hiddenTab" id="fn_tab">
+			<br /><br />
+			<div class="fn_tab">
+				<div class="fn_info" id="fn_info">
+					Финальный раунд
+				</div>
+				<!-- Место под кнопки тем -->
+				<div class="fn_list" id="fn_topics">
+				</div><br />
+				<input type="button" class="wide" onclick="g_addTopic();" value="Добавить тему" /><input type="button" class="wide" onclick="g_closeFinal();" value="Закрыть" />
+			</div>
+		</div>
+		
+		<!-- Окно приветствия -->
+		<div class="welcome" id="welcome">
+			<div class="welcome_top">Калькулятор "СИ" </div>v.130524
+			<div class="intro">
+			<p>Данная программа предназначена для подсчета очков при игре в спортивную "Свою игру" и проведения игр на площадке с проектором. </p>
+			<p>Для работы требуется современный браузер. Программа испытывалась и работает на следующих браузерах:</p>
+			<ul>
+				<li>Mozilla Firefox 18.0.1</li>
+				<li>Google Chrome 24.0.1312.56</li>
+				<li>Opera 12.15</li>
+				<li>Internet Explorer 10.0.9200.16384 - <i>не работает отчет и сохранение</i></li>
+			</ul>
+			<p>Для использования <b><u>рекомендуется перевести браузер в полноэкранный режим</u></b> (в большинстве случаев это делается нажатием клавиши <b>F11</b>) и <b><u>отмасштабировать страницу</u></b> для удобного использования (вращением колесика мыши с зажатым <b>Ctrl</b> в большинстве браузеров). Данная версия настроена для использования на проекторах с соотношением сторон <b>4:3</b></p>
+			<p>Программа не требует доступа к Интернету, и может быть сохранена для оффлайнового использования (достаточно сохранить этот html-файл).</p>
+			<p>Переключение между режимами калькулятора и игровой сетки производится нажатием на кнопку в верхнем левом углу. Корректировка множителя раунда, имен игроков и текущего счета производится в режиме калькулятора кликом по соответствующему полю. Смена выбирающего тему игрока производится кликом по имени в режиме игровой сетки.</p>
+			<p>Кнопки по бокам от калькулятора созданы для удобства ведущего счет - они подсвечивают строку со стоимостью вопроса, не изменяя счет.</p>
+			<p>Подсветка игроков: зеленый - игрок, имеющий право ответа, светлый - игрок, выбирающий тему.</p>
+			<p>В режиме игровой сетки клетки гасятся сами при правильном ответе ("+" у игрока), при отсутствии ответа следует погасить клетку повторным кликом по ней.</p>
+			<p>При розыгрыше "Аукциона" сам аукцион проводится устно, на экране выбирается победитель, а его ставка вводится в поле ввода между кнопками "-" и "+"</p>
+			</div>
+			Создано <a href="http://vk.com/seihoukei">Моисеевым Василием</a>, команда "БК", <a href="http://vk.com/club_blacksquare">клуб "Черный Квадрат"</a>, Северодвинск.<br>Бесплатное распространение, доработка и переделка под нужды и предпочтения по месту использования приветствуются.<br>
+			Последняя авторская версия доступна на <a href="http://zefiris.su/calc/si.html">http://zefiris.su/calc/si.html</a>.
+			<br>
+			<br>
+			<input type='button' onclick='initGame()' value='Закрыть' /><br /><br />
+		</div>
+		
+		<!-- Заготовка вкладки об игроке (вместо _num_ будет подставлен номер) -->
+		<script id="template" type="text/plain">
+			<div class="playerTab" id="p_num_">
+				<div class="buttonList">
+					<input type="button" value="Удалить" id="p_num_rem" onclick="delPlayer(_num_,0)" class="wide" /><br />
+					<div id="hl_num_n1" class="button0"><input type="button" value="-10" id="p_num_d1" onclick="addScore(_num_,-10)" class="score" /><input type="button" value="+10" id="p_num_a1" onclick="addScore(_num_,10)" class="score" /></div>
+					<div id="hl_num_n2" class="button0"><input type="button" value="-20" id="p_num_d2" onclick="addScore(_num_,-20)" class="score" /><input type="button" value="+20" id="p_num_a2" onclick="addScore(_num_,20)" class="score" /></div>
+					<div id="hl_num_n3" class="button0"><input type="button" value="-30" id="p_num_d3" onclick="addScore(_num_,-30)" class="score" /><input type="button" value="+30" id="p_num_a3" onclick="addScore(_num_,30)" class="score" /></div>
+					<div id="hl_num_n4" class="button0"><input type="button" value="-40" id="p_num_d4" onclick="addScore(_num_,-40)" class="score" /><input type="button" value="+40" id="p_num_a4" onclick="addScore(_num_,40)" class="score" /></div>
+					<div id="hl_num_n5" class="button0"><input type="button" value="-50" id="p_num_d5" onclick="addScore(_num_,-50)" class="score" /><input type="button" value="+50" id="p_num_a5" onclick="addScore(_num_,50)" class="score" /></div>
+					<div id="hl_num_n6" class="button0"><input type="button" value="-" id="p_num_dc" onclick="addScoreCustom(_num_,-1,'c_num_')" class="scoreButton" /><input type="text" value="10" id="c_num_" class="scoreEdit" /><input type="button" value="+" id="p_num_ac" onclick="addScoreCustom(_num_,1,'c_num_')" class="scoreButton" /></div>
+					<input type="button" value="Отменить" id="p_num_r" onclick="undoPlayer(_num_)" class="wide" /><br />
+				</div>
+				<div class="name" id="n_num_" onclick="rename(_num_)">Игрок _num_</div>
+				<div class="score" id="s_num_" onclick="rescore(_num_)">0</div>
+				<div class="history" id="h_num_"></div>
+			</div>
+		</script>
+		
+		<!-- Заготовка малой вкладки об игроке (вместо _num_ будет подставлен номер) -->
+		<script id="gm_template" type="text/plain">
+			<div class="gm_playerTab" id="gp_num_">
+				<table><tr><td colspan="2">
+					<div class="name" id="gn_num_" onclick="setSelectPlayer(_num_)">Игрок _num_</div>
+				</td></tr><tr><td>
+					<div class="buttonList">
+						<input type="button" value="-" id="gp_num_dc" onclick="addScoreCustom(_num_,-1,'gc_num_')" class="gm_scoreButton" /><input type="text" value="10" id="gc_num_" class="gm_scoreEdit" /><input type="button" value="+" id="gp_num_ac" onclick="addScoreCustom(_num_,1,'gc_num_')" class="gm_scoreButton" /><br />
+						<input type="button" value="Отменить" id="gp_num_r" onclick="undoPlayer(_num_)" class="gm_wide" /><br />
+					</div>
+				</td><td>
+					<div class="gm_score" id="gs_num_">0</div>
+				</td></tr></table>
+			</div>
+		</script>
+		
+		<!-- Заготовка отчета об игре -->
+		<script id="report" type="text/plain">
+<html><head><title>Результаты игры _date_</title><style>
+body{text-align:center}
+div.head{padding:10px;font-size:40px;}
+table{background-color:lightblue;margin:auto}
+td{background-color:azure;margin:20px;text-align:center}
+td.name{font-size:30px; padding:20px;}
+td.score{font-size:100px;padding:5px;font-weight:bold}
+</style></head><body><div class="head">Результаты игры _head_</div><table><tr>_names_</tr><tr>_scores_</tr></table></body></html>
+		</script>
+		
+		<script type="text/javascript">
+			//Задаем соотношение сторон проектора. Широкоэкранный = 16, квадратный = 4
+			ar = 4;
+
+			// Все размеры и цвета задаются в таблице стилей в начале файла.
+			// Для элементов калькулятора - в верхней части
+			// Для игровой сетки - в полях table.game 
+			// Для индикаторов под игровой сеткой - в полях, начинающихся с g_
+			// Для элементов Аукциона, Кота в мешке и Финала - в полях на sp_ и fn_
+			// !! Править размеры рекомендуется только для изменения их соотношения.   !!
+			// !! Размеры под экран рекомендуется подгонять масштабированием в браузере. !!
+
+			// Если есть хранилище и это не первый запуск - прячем окно приветствия сразу
+			if (window.localStorage && window.localStorage["mult"])
+				initGame();
+			// Чтобы окно приветствия всегда исчезало сразу - оставить только initGame();
+		</script>
+	</body>
+</html>
