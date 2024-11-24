@@ -10,12 +10,18 @@
 		<title>
 			Своя игра - калькулятор
 		</title>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:wdth,wght,YOPQ@151,700,100&display=swap" rel="stylesheet">
 		<style type="text/css">
 			body {
 				text-align : center;
 				padding : 0;
 				margin : 0;
 				height : 100%;
+				font-family: 'Roboto Flex', sans-serif;
+				font-weight: 700;
+				font-stretch: 151%;
+				font-variation-settings: 'YOPQ' 100;
+				background-color : #000000;
 			}
 			
 			/* Элементы внутренней механики */
@@ -50,14 +56,14 @@
 
 			/* Верхняя панель кальклятора */
 			table.topPanel {
-				background-color : #CCDDEE;
+				background-color : #000000;
 				border-spacing : 5px;
 				margin : 0 10px 10px 10px;
 				display : inline-block;
 				white-space : nowrap;
 			}
 			table.topPanel td {
-				background-color : #F1FAFF;
+				background-color : #000000;
 				padding : 5px 10px;
 				white-space : nowrap;
 			}
@@ -90,13 +96,13 @@
 				text-align : center;
 				display: inline-block;
 				padding : 5px;
-				background-color : #99AABB;
+				background-color : #000000;
 				vertical-align : top;
 			}
 			/* Поле кнопок */
 			div.buttonList {
 				padding : 5px 0px;
-				background-color : #F1FAFF;
+				background-color : #000000;
 			}
 			div.button0 {
 				padding : 0px 10px;
@@ -112,7 +118,7 @@
 			div.name {
 				margin : 5px 0px;
 				padding : 0px 5px;
-				background-color : #F1FAFF;
+				color : #E5C61E;
 				font-size : 16pt;
 				text-align : center;
 			}
@@ -147,12 +153,12 @@
 				font-size : 50pt;
 				font-weight : bold;
 				margin : 5px 0px;
-				background-color : #F1FAFF;
+				color : #E5C61E;
 			}
 			/* поле истории изменения очков */
 			div.history {
 				text-align : center;
-				background-color : #F1FAFF;
+				background-color : #000000;
 				color : #445566;
 			}
 			div.add {
@@ -169,7 +175,7 @@
 				text-align : center;
 				display: inline-block;
 				padding : 5px;
-				background-color : #99AABB;
+				background-color : #000000;
 				vertical-align : top;
 			}
 			/* малое поле игрока (имеющего право отвечать) */
@@ -177,7 +183,7 @@
 				text-align : center;
 				display: inline-block;
 				padding : 5px;
-				background-color : #7FFF7F;
+				background-color : #303030;
 				vertical-align : top;
 			}
 			/* малое поле игрока (имеющего право выбирать) */
@@ -185,8 +191,12 @@
 				text-align : center;
 				display: inline-block;
 				padding : 5px;
-				background-color : #CCDDEE;
+				background-color : #CB0031;
 				vertical-align : top;
+			}
+			div.gm_selectPlayer div.gm_score,
+			div.gm_selectPlayer div.name {
+				color: #FFFFFF;
 			}
 			/* поле очков */
 			div.gm_score {
@@ -194,13 +204,13 @@
 				font-size : 50pt;
 				font-weight : bold;
 				margin : 5px 0px;
-				background-color : #F1FAFF;
+				color : #E5C61E;
 				width:150px;
 			}
 			/* поле имени */
 			div.gm_name {
 				margin : 5px 0px;
-				background-color : #F1FAFF;
+				background-color : #000000;
 				font-size : 16pt;
 				text-align : center;
 			}
@@ -212,7 +222,7 @@
 				bottom : 0px;
 				left : 0px;
 				padding : 5px;
-				background-color : #CCDDEE;
+				background-color : #000000;
 				vertical-align : top;
 				text-align : center;
 				width : 100%;
@@ -250,14 +260,14 @@
 				-moz-user-select: -moz-none;
 				-webkit-user-select: none;
 				width:100%;
-				background-color:#CCDDEE;
+				background-color:#000000;
 				border-spacing:10px;
 				margin: 0 0 4px 0;
 			}
 			/* клетка (общий вид) */
 			table.game td {
-				background-color:#F1FAFF;
-				color:#112233;
+				background-color:#000000;
+				color:#E5C61E;
 			}
 			/* тема 16:9 */
 			table.game td.topic16 {
@@ -272,8 +282,8 @@
 			}
 			/* выбранная клетка 16:9 */
 			table.game td.gm_activeCell16 {
-				background-color:#112233;
-				color:#F1FAFF;
+				background-color:#E5C61E;
+				color:#000000;
 				width:14%;
 				font-size:40pt;
 			}
@@ -290,8 +300,8 @@
 			}
 			/* выбранная клетка 4:3 */
 			table.game td.gm_activeCell4 {
-				background-color:#112233;
-				color:#F1FAFF;
+				background-color:#E5C61E;
+				color:#000000;
 				width:14%;
 				font-size:60pt;
 			}
@@ -305,8 +315,8 @@
 
 			/* окно Аукцион / Кот в мешке */
 			div.sp_tab {
-				background-color : #F1FAFF;
-				border : solid 10px #CCDDEE;
+				background-color : #000000;
+				border : solid 10px #000000;
 				display : inline-block;
 				width:70%;
 				padding: 0 0 20px 0;
@@ -332,8 +342,8 @@
 
 			/* окно финала */
 			div.fn_tab {
-				background-color : #F1FAFF;
-				border : solid 10px #CCDDEE;
+				background-color : #000000;
+				border : solid 10px #000000;
 				display : inline-block;
 				width:80%;
 				padding: 0 0 20px 0;
@@ -363,8 +373,8 @@
 				white-space : normal;
 			}
 			div.welcome {
-				background-color : #F1FAFF;
-				border : solid 10px #CCDDEE;
+				background-color : #000000;
+				border : solid 10px #000000;
 				display : inline-block;
 				position : absolute;
 				margin : auto;
