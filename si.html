@@ -10,7 +10,8 @@
 		<title>
 			Своя игра - калькулятор
 		</title>
-		<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:wdth,wght,YOPQ@151,700,100&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:wdth,wght,YOPQ@151,700,100&display=swap" rel="stylesheet" />
+		<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght@24..48,700&icon_names=add,delete_forever,gavel,pets,remove,settings,summarize,trophy,undo" rel="stylesheet" />
 		<style type="text/css">
 			body {
 				text-align : center;
@@ -102,7 +103,6 @@
 			/* Поле кнопок */
 			div.buttonList {
 				padding : 5px 0px;
-				background-color : #000000;
 			}
 			div.button0 {
 				padding : 0px 10px;
@@ -195,7 +195,8 @@
 				vertical-align : top;
 			}
 			div.gm_selectPlayer div.gm_score,
-			div.gm_selectPlayer div.name {
+			div.gm_selectPlayer div.name,
+			div.gm_selectPlayer input {
 				color: #FFFFFF;
 			}
 			/* поле очков */
@@ -231,22 +232,37 @@
 			}
 			/* Кнопки "+" и "-" */
 			input.gm_scoreButton {
-				width : 18px;
-				height : 40px;
-				font-size : 8pt;
+				font-size : 16pt;
+				background-color : transparent;
+				color:#E5C61E;
+				border-width: 0;
+  				font-variation-settings: 'wght' 700;
+				padding: 1px;
+				vertical-align: top;
 			}
 			/* Поле ввода очков */
 			input.gm_scoreEdit {
+				font-family: 'Roboto Flex', sans-serif;
+				font-weight: 700;
+				font-stretch: 151%;
+				font-variation-settings: 'YOPQ' 100;
 				text-align : center;
-				width : 40px;
-				height : 40px;
+				width : 45px;
 				font-size : 16pt;
+				background-color : transparent;
+				color:#E5C61E;
+				border-width: 0;
+				padding: 0;
 			}
 			/* Кнопка "Отменить" */
 			input.gm_wide {
 				width : 80px;
-				height : 20px;
-				font-size : 8pt;
+				font-size : 15pt;
+				background-color : transparent;
+				color:#E5C61E;
+				border-width: 0;
+  				font-variation-settings: 'wght' 700;
+				padding: 0;
 			}
 
 			table.hgame,table.hgame tr,table.hgame td {
@@ -309,8 +325,13 @@
 			input.gm_sideButton {
 				width : 60px;
 				height : 40px;
-				font-size : 8pt;
 				white-space : normal;
+				font-size : 18pt;
+				background-color : transparent;
+				color:#E5C61E;
+				border-width: 0;
+  				font-variation-settings: 'wght' 700, 'opsz' 48;
+				padding: 0;
 			}
 
 			/* окно Аукцион / Кот в мешке */
@@ -1068,16 +1089,16 @@
 			<!-- Боковые кнопки и место под информацию об игроках -->
 			<div class="gm_footer">
 				<div class="markers" id="gm1">
-					<input type="button" value="Сброс сетки" id="gtl1" onclick="resetGame();" class="gm_sideButton" /><br />
-					<input type="button" value="Настройка игры" id="gtl2" onclick="switchTabs();" class="gm_sideButton" /><br />
-					<input type="button" value="Отчет" id="gtl3" onclick="report();" class="gm_sideButton" />					
+					<input type="button" value="delete_forever" id="gtl1" onclick="resetGame();" class="gm_sideButton material-symbols-outlined" /><br />
+					<input type="button" value="settings" id="gtl2" onclick="switchTabs();" class="gm_sideButton material-symbols-outlined" /><br />
+					<input type="button" value="summarize" id="gtl3" onclick="report();" class="gm_sideButton material-symbols-outlined" />					
 				</div>			
 				<div id="gplayerList" class="playerList">
 				</div>
 				<div class="markers" id="gm2">
-					<input type="button" value="Кот в мешке" id="gtr1" onclick="g_spec(0);" class="gm_sideButton" /><br />
-					<input type="button" value="Аукцион" id="gtr2" onclick="g_spec(1);" class="gm_sideButton" /><br />
-					<input type="button" value="Финал" id="gtr3" onclick="g_final();" class="gm_sideButton" />
+					<input type="button" value="pets" id="gtr1" onclick="g_spec(0);" class="gm_sideButton material-symbols-outlined" /><br />
+					<input type="button" value="gavel" id="gtr2" onclick="g_spec(1);" class="gm_sideButton material-symbols-outlined" /><br />
+					<input type="button" value="trophy" id="gtr3" onclick="g_final();" class="gm_sideButton material-symbols-outlined" />
 				</div>
 			</div>
 		</div>
@@ -1166,8 +1187,8 @@
 					<div class="name" id="gn_num_" onclick="setSelectPlayer(_num_)">Игрок _num_</div>
 				</td></tr><tr><td>
 					<div class="buttonList">
-						<input type="button" value="-" id="gp_num_dc" onclick="addScoreCustom(_num_,-1,'gc_num_')" class="gm_scoreButton" /><input type="text" value="10" id="gc_num_" class="gm_scoreEdit" /><input type="button" value="+" id="gp_num_ac" onclick="addScoreCustom(_num_,1,'gc_num_')" class="gm_scoreButton" /><br />
-						<input type="button" value="Отменить" id="gp_num_r" onclick="undoPlayer(_num_)" class="gm_wide" /><br />
+						<input type="button" value="remove" id="gp_num_dc" onclick="addScoreCustom(_num_,-1,'gc_num_')" class="gm_scoreButton material-symbols-outlined" /><input type="text" value="10" id="gc_num_" class="gm_scoreEdit" /><input type="button" value="add" id="gp_num_ac" onclick="addScoreCustom(_num_,1,'gc_num_')" class="gm_scoreButton material-symbols-outlined" /><br />
+						<input type="button" value="undo" id="gp_num_r" onclick="undoPlayer(_num_)" class="gm_wide material-symbols-outlined" /><br />
 					</div>
 				</td><td>
 					<div class="gm_score" id="gs_num_">0</div>
